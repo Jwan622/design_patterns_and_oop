@@ -297,3 +297,57 @@ end
 
 Note that we have defined the abstract factory (MyAbstractGameFactory) as a module: it defines the abstract method that must be implemented by the class that includes it.
 RpgFactory and ArcadeFactory represent the two concrete factories responsible to build, respectively, Arcade and RPG games.
+
+
+
+#### More on abstract factories:
+
+An Abstract Factory is simply an abstract interface for concrete Factory objects to conform to, this pattern pretty much falls away. This is perhaps easier to show than to explain, so I will go ahead and build out a Ruby version of the example shown in the wikipedia article I've linked to above.
+
+```ruby
+module OSXGuiToolkit
+  extend self
+
+  def button
+    Button.new
+  end
+
+  class Button
+    def paint
+      puts "I'm an OSX Button"
+    end
+  end
+end
+
+module WinGuiToolkit
+  extend self
+
+  def button
+    Button.new
+  end
+
+  class Button
+    def paint
+      puts "I'm a WINDOWS button"
+    end
+  end
+end
+
+class Application
+  def initialize(gui_toolkit)
+    button = gui_toolkit.button
+    button.paint
+  end
+end
+
+# this check is a very quick hack, not reliable.
+if PLATFORM =~ /darwin/
+  Application.new(OSXGuiToolkit)
+else
+  Application.new(WinGuiToolkit)
+end
+```
+
+In the above example, I think the Application class is the factory which causes any gui_toolkil module to conform to it. Any gui_toolkit needs to implement a button method which then needs to return the module's own Button class.
+
+In this example, you'll see that we've eliminated the explicit Abstract Factory interface. Instead, what we've done is created two concrete object factories, OSXGuiToolkit and WinGuiToolkit, that implement a common API. We then create a simple Application stub class which shows that the GUI toolkit factory should be injected into the Application. 
