@@ -350,4 +350,169 @@ end
 
 In the above example, I think the Application class is the factory which causes any gui_toolkil module to conform to it. Any gui_toolkit needs to implement a button method which then needs to return the module's own Button class.
 
-In this example, you'll see that we've eliminated the explicit Abstract Factory interface. Instead, what we've done is created two concrete object factories, OSXGuiToolkit and WinGuiToolkit, that implement a common API. We then create a simple Application stub class which shows that the GUI toolkit factory should be injected into the Application. 
+In this example, you'll see that we've eliminated the explicit Abstract Factory interface. Instead, what we've done is created two concrete object factories, OSXGuiToolkit and WinGuiToolkit, that implement a common API. We then create a simple Application stub class which shows that the GUI toolkit factory should be injected into the Application.
+
+
+
+
+#### More on FActory pattern:
+
+
+In Factory pattern, we create object without exposing the creation logic to the client and refer to newly created object using a common interface.
+
+This following examples involves a common interfact called Shape, concrete shape objects, a shape factory which has the creation logic, and a factory class called FactoryPatternDemo that uses the factory and has no exposure to the creation logic and the object all have a common interface.
+
+The interface:
+
+```java
+public interface Shape {
+   void draw();
+}
+```
+
+Some shapes:
+
+```java
+public class Rectangle implements Shape {
+
+   @Override
+   public void draw() {
+      System.out.println("Inside Rectangle::draw() method.");
+   }
+}
+```
+
+```java
+public class Square implements Shape {
+
+   @Override
+   public void draw() {
+      System.out.println("Inside Square::draw() method.");
+   }
+}
+```
+
+```java
+
+public class Circle implements Shape {
+
+   @Override
+   public void draw() {
+      System.out.println("Inside Circle::draw() method.");
+   }
+}
+```
+
+ShapeFactory:
+
+```java
+public class ShapeFactory {
+
+   //use getShape method to get object of type shape
+   public Shape getShape(String shapeType){
+      if(shapeType == null){
+         return null;
+      }		
+      if(shapeType.equalsIgnoreCase("CIRCLE")){
+         return new Circle();
+
+      } else if(shapeType.equalsIgnoreCase("RECTANGLE")){
+         return new Rectangle();
+
+      } else if(shapeType.equalsIgnoreCase("SQUARE")){
+         return new Square();
+      }
+
+      return null;
+   }
+}
+```
+
+
+FactoryPatternDemo
+
+```java
+public class FactoryPatternDemo {
+
+   public static void main(String[] args) {
+      ShapeFactory shapeFactory = new ShapeFactory();
+
+      //get an object of Circle and call its draw method.
+      Shape shape1 = shapeFactory.getShape("CIRCLE");
+
+      //call draw method of Circle
+      shape1.draw();
+
+      //get an object of Rectangle and call its draw method.
+      Shape shape2 = shapeFactory.getShape("RECTANGLE");
+
+      //call draw method of Rectangle
+      shape2.draw();
+
+      //get an object of Square and call its draw method.
+      Shape shape3 = shapeFactory.getShape("SQUARE");
+
+      //call draw method of circle
+      shape3.draw();
+   }
+}
+```
+
+
+#### From wiki:
+
+
+In class-based programming, the factory method pattern is a creational pattern that uses factory methods to deal with the problem of creating objects without having to specify the exact class of the object that will be created. This is done by creating objects by calling a factory method—either specified in an interface and implemented by child classes, or implemented in a base class and optionally overridden by derived classes—rather than by calling a constructor.
+
+> "Define an interface for creating an object, but let subclasses decide which class to instantiate. The Factory method lets a class defer instantiation it uses to subclasses."(Gang Of Four)
+
+
+Creating an object often requires complex processes not appropriate to include within a composing object. The object's creation may lead to a significant duplication of code, may require information not accessible to the composing object, may not provide a sufficient level of abstraction, or may otherwise not be part of the composing object's concerns. The factory method design pattern handles these problems by defining a separate method for creating the objects, which subclasses can then override to specify the derived type of product that will be created.
+
+**Example in Java:**
+
+A maze game may be played in two modes, one with regular rooms that are only connected with adjacent rooms, and one with magic rooms that allow players to be transported at random (this Java example is similar to one in the book Design Patterns). The regular game mode could use this template method:
+
+
+```java
+public abstract class MazeGame {
+    public MazeGame() {
+        Room room1 = makeRoom();
+        Room room2 = makeRoom();
+        room1.connect(room2);
+        this.addRoom(room1);
+        this.addRoom(room2);
+    }
+
+    abstract protected Room makeRoom();
+}
+```
+
+In the above snippet, the MazeGame constructor is a template method that makes some common logic. It refers to the makeRoom factory method that encapsulates the creation of rooms such that other rooms can be used in a subclass. To implement the other game mode that has magic rooms, it suffices to override the makeRoom method:
+
+```java
+public class MagicMazeGame extends MazeGame {
+    @Override
+    protected Room makeRoom() {
+        return new MagicRoom();
+    }
+}
+
+public class OrdinaryMazeGame extends MazeGame {
+    @Override
+    protected Room makeRoom() {
+        return new OrdinaryRoom();
+    }
+}
+
+MazeGame ordinaryGame = new OrdinaryMazeGame();
+MazeGame magicGame = new MagicMazeGame();
+```
+
+So in this code, the MazeGame implements the factory method pattern. The MazeGame constructor in the class has common logic and it refers to a makeRoom method that does not specify the exact class being created.
+
+MagicMazeGame is a subclass that actually creates the object.
+
+The factory pattern is specified in an interface and implemented by child classes.
+
+In this pattern, when the new MagicMazeGame is called, the constructor MazeGame is called which then calls teh makeRoom method which creates the actual rooms. The constructor MazeGame creates the room objects without having to specify the exact class being created. 
